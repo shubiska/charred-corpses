@@ -1,0 +1,7 @@
+C:\Program Files (x86)\Steam\steamapps\common\RimWorld\Mods\charred-corpses\1.6\Assemblies\CharredCorpses.dll
+C:\Program Files (x86)\Steam\steamapps\common\RimWorld\Mods\charred-corpses\source\obj\Debug\CharredCorpses.csproj.AssemblyReference.cache
+C:\Program Files (x86)\Steam\steamapps\common\RimWorld\Mods\charred-corpses\source\obj\Debug\CharredCorpses.GeneratedMSBuildEditorConfig.editorconfig
+C:\Program Files (x86)\Steam\steamapps\common\RimWorld\Mods\charred-corpses\source\obj\Debug\CharredCorpses.AssemblyInfoInputs.cache
+C:\Program Files (x86)\Steam\steamapps\common\RimWorld\Mods\charred-corpses\source\obj\Debug\CharredCorpses.AssemblyInfo.cs
+C:\Program Files (x86)\Steam\steamapps\common\RimWorld\Mods\charred-corpses\source\obj\Debug\CharredCorpses.csproj.CoreCompileInputs.cache
+C:\Program Files (x86)\Steam\steamapps\common\RimWorld\Mods\charred-corpses\source\obj\Debug\CharredCorpses.dll
