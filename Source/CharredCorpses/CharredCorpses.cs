@@ -38,21 +38,39 @@ namespace CharredCorpses
     [HarmonyPatch(typeof(Fire), "DoFireDamage")]
     public static class DoFireDamage_FirePatch
     {
+        public static void BurnApparel(Pawn pawn, float damagePercent)
+        {
+            if (pawn.RaceProps.Humanlike == false) return;
+
+            List<Apparel> worn = pawn.apparel.WornApparel;
+            if (worn == null || worn.Count < 0) return;
+
+            foreach (Apparel gear in worn.ToList())
+            {
+                if (gear.GetStatValue(StatDefOf.Flammability) < 0.5f) continue;
+                int damage = (int)(gear.HitPoints * damagePercent);
+
+                if (gear.HitPoints <= damage) gear.Destroy();
+                gear.HitPoints -= damage;
+            }
+        }
+
         public static bool Prefix(Fire __instance, Thing targ)
         {
             if (!(targ is Corpse corpse) || __instance == null || __instance.Destroyed) return true;
             if (!(corpse?.InnerPawn is Pawn pawn)) return true;
             if (!(pawn.TryGetComp<CompCharrable>() is CompCharrable charrable)) return true;
 
-            CompRottable rottable = corpse.TryGetComp<CompRottable>();
-
-            if (rottable?.Stage == RotStage.Dessicated && charrable.Stage == 0) charrable.Severity = 0.5f;
-
             if (charrable.Stage == 2)
             {
                 __instance.DeSpawn();
                 return false;
             }
+
+            CompRottable rottable = corpse.TryGetComp<CompRottable>();
+            if (rottable?.Stage == RotStage.Rotting && charrable.Severity < 0.25) charrable.Severity = 0.25f;
+            if (rottable?.Stage == RotStage.Dessicated && charrable.Severity < 0.5) charrable.Severity = 0.5f;
+
 
             charrable.Severity += 0.025f;
 
@@ -68,23 +86,25 @@ namespace CharredCorpses
                     pawn.Drawer.renderer.SetAllGraphicsDirty();
                 }
             }
-            else if (charrable.Stage == 1 && charrable.Severity >= 1f)
+            else if (charrable.Stage == 1)
             {
-                charrable.Stage = 2;
-                charrable.Severity = 1f;
-
-                if (rottable != null && rottable.Stage != RotStage.Dessicated) rottable.RotProgress = rottable.PropsRot.TicksToDessicated + 10;
-
-                if (pawn.RaceProps.Humanlike)
+                if (Random.value <= 0.03f)
                 {
-                    List<Apparel> worn = pawn.apparel?.WornApparel;
-                    if (worn != null)
-                    {
-                        foreach (Apparel gear in worn.ToList())
-                        {
-                            if (gear.GetStatValue(StatDefOf.Flammability) > 0.5f) gear.Destroy();
-                        }
-                    }
+                    BurnApparel(pawn, 0.5f);
+
+                    __instance.DeSpawn();
+                    return false;
+                }
+
+                if (charrable.Severity >= 1f)
+                {
+                    charrable.Stage = 2;
+                    charrable.Severity = 1f;
+
+                    if (rottable != null && rottable.Stage != RotStage.Dessicated) rottable.RotProgress = rottable.PropsRot.TicksToDessicated + 10;
+
+                    BurnApparel(pawn, 1f);
+                    FilthMaker.TryMakeFilth(__instance.Position, __instance.Map, ThingDefOf.Filth_Ash, 1);
                 }
             }
 
