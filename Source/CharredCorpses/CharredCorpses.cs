@@ -26,12 +26,36 @@ namespace CharredCorpses
     {
         public int Stage = 0;
         public float Severity = 0f;
+        public Pawn Pawn = null;
+        public HairDef HairDef = null;
+        public BeardDef BeardDef = null;
+        public Color HairColor = Color.white;
+        public Color? SkinColor = null;
 
         public override void PostExposeData()
         {
             base.PostExposeData();
             Scribe_Values.Look(ref Stage, "Stage", 0);
             Scribe_Values.Look(ref Severity, "Severity", 0f);
+            Scribe_Values.Look(ref Pawn, "Pawn", null);
+            Scribe_Values.Look(ref HairDef, "HairDef", null);
+            Scribe_Values.Look(ref BeardDef, "BeardDef", null);
+            Scribe_Values.Look(ref HairColor, "HairColor", Color.white);
+            Scribe_Values.Look(ref SkinColor, "SkinColor", null);
+        }
+
+        public override void CompTick()
+        {
+            if (Stage != 0 && Pawn.Dead == false && Pawn.IsShambler == false)
+            {
+                Stage = 0;
+                Severity = 0;
+                Pawn.story.hairDef = HairDef;
+                Pawn.style.beardDef = BeardDef;
+                Pawn.story.HairColor = HairColor;
+                Pawn.story.skinColorOverride = SkinColor;
+                Pawn.Drawer.renderer.SetAllGraphicsDirty();
+            }
         }
     }
 
@@ -79,9 +103,15 @@ namespace CharredCorpses
                 charrable.Stage = 1;
                 if (pawn.RaceProps.Humanlike)
                 {
+                    charrable.Pawn = pawn;
+                    charrable.HairDef = pawn.story.hairDef;
+                    charrable.BeardDef = pawn.style.beardDef;
+                    charrable.HairColor = pawn.story.HairColor;
+                    charrable.SkinColor = pawn.story.skinColorOverride;
+
                     pawn.story.hairDef = DefDatabase<HairDef>.GetNamed("Bald");
-                    pawn.story.HairColor = Data.charred;
                     pawn.style.beardDef = null;
+                    pawn.story.HairColor = Data.charred;
                     pawn.story.skinColorOverride = Data.charred;
                     pawn.Drawer.renderer.SetAllGraphicsDirty();
                 }
