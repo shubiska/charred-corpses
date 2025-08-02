@@ -37,9 +37,9 @@ namespace CharredCorpses
             base.PostExposeData();
             Scribe_Values.Look(ref Stage, "Stage", 0);
             Scribe_Values.Look(ref Severity, "Severity", 0f);
-            Scribe_Values.Look(ref Pawn, "Pawn", null);
-            Scribe_Values.Look(ref HairDef, "HairDef", null);
-            Scribe_Values.Look(ref BeardDef, "BeardDef", null);
+            Scribe_References.Look(ref Pawn, "Pawn");
+            Scribe_Defs.Look(ref HairDef, "HairDef");
+            Scribe_Defs.Look(ref BeardDef, "BeardDef");
             Scribe_Values.Look(ref HairColor, "HairColor", Color.white);
             Scribe_Values.Look(ref SkinColor, "SkinColor", null);
         }
