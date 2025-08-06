@@ -48,13 +48,16 @@ namespace CharredCorpses
         {
             if (Stage != 0 && Pawn.Dead == false && Pawn.IsShambler == false)
             {
+                if (Pawn.RaceProps.Humanlike)
+                {
+                    Pawn.story.hairDef = HairDef;
+                    Pawn.style.beardDef = BeardDef;
+                    Pawn.story.HairColor = HairColor;
+                    Pawn.story.skinColorOverride = SkinColor;
+                    Pawn.Drawer.renderer.SetAllGraphicsDirty();
+                }
                 Stage = 0;
                 Severity = 0;
-                Pawn.story.hairDef = HairDef;
-                Pawn.style.beardDef = BeardDef;
-                Pawn.story.HairColor = HairColor;
-                Pawn.story.skinColorOverride = SkinColor;
-                Pawn.Drawer.renderer.SetAllGraphicsDirty();
             }
         }
     }
@@ -101,9 +104,11 @@ namespace CharredCorpses
             if (charrable.Stage == 0 && charrable.Severity >= 0.5f)
             {
                 charrable.Stage = 1;
+
+                charrable.Pawn = pawn;
+
                 if (pawn.RaceProps.Humanlike)
                 {
-                    charrable.Pawn = pawn;
                     charrable.HairDef = pawn.story.hairDef;
                     charrable.BeardDef = pawn.style.beardDef;
                     charrable.HairColor = pawn.story.HairColor;
@@ -161,18 +166,18 @@ namespace CharredCorpses
             shaded = true;
             colorDefault = pawn.Drawer.renderer.BodyGraphic.MatSingle.color;
 
-            if (pawn.IsShambler)
+            if (!(pawn.RaceProps.Humanlike && charrable.Stage == 1))
             {
-                if (pawn.Drawer.renderer.BodyGraphic != null) pawn.Drawer.renderer.BodyGraphic.MatAt(pawn.Rotation).color = Data.charred;
-                if (pawn.Drawer.renderer.HeadGraphic != null) pawn.Drawer.renderer.HeadGraphic.MatAt(pawn.Rotation).color = Data.charred;
-                return;
-            }
-
-
-            if (pawn.RaceProps.Humanlike == false || (pawn.RaceProps.Humanlike && charrable.Stage == 2))
-            {
-                if (pawn.Drawer.renderer.BodyGraphic != null) pawn.Drawer.renderer.BodyGraphic.MatAt(pawn.Drawer.renderer.LayingFacing()).color = Data.charred;
-                if (pawn.Drawer.renderer.HeadGraphic != null) pawn.Drawer.renderer.HeadGraphic.MatAt(pawn.Drawer.renderer.LayingFacing()).color = Data.charred;
+                if (pawn.Drawer.renderer.BodyGraphic != null)
+                {
+                    pawn.Drawer.renderer.BodyGraphic.MatAt(pawn.Rotation).color = Data.charred;
+                    pawn.Drawer.renderer.BodyGraphic.MatAt(pawn.Drawer.renderer.LayingFacing()).color = Data.charred;
+                    if (pawn.Drawer.renderer.HeadGraphic != null)
+                    {
+                        pawn.Drawer.renderer.HeadGraphic.MatAt(pawn.Rotation).color = Data.charred;
+                        pawn.Drawer.renderer.HeadGraphic.MatAt(pawn.Drawer.renderer.LayingFacing()).color = Data.charred;
+                    }
+                }
             }
         }
 
@@ -181,15 +186,16 @@ namespace CharredCorpses
             if (!shaded) return;
             shaded = false;
 
-            if (pawn.IsShambler)
+            if (pawn.Drawer.renderer.BodyGraphic != null)
             {
-                if (pawn.Drawer.renderer.BodyGraphic != null) pawn.Drawer.renderer.BodyGraphic.MatAt(pawn.Rotation).color = colorDefault;
-                if (pawn.Drawer.renderer.HeadGraphic != null) pawn.Drawer.renderer.HeadGraphic.MatAt(pawn.Rotation).color = colorDefault;
-                return;
+                pawn.Drawer.renderer.BodyGraphic.MatAt(pawn.Rotation).color = colorDefault;
+                pawn.Drawer.renderer.BodyGraphic.MatAt(pawn.Drawer.renderer.LayingFacing()).color = colorDefault;
+                if (pawn.Drawer.renderer.HeadGraphic != null)
+                {
+                    pawn.Drawer.renderer.HeadGraphic.MatAt(pawn.Rotation).color = colorDefault;
+                    pawn.Drawer.renderer.HeadGraphic.MatAt(pawn.Drawer.renderer.LayingFacing()).color = colorDefault;
+                }
             }
-
-            if (pawn.Drawer.renderer.BodyGraphic != null) pawn.Drawer.renderer.BodyGraphic.MatAt(pawn.Drawer.renderer.LayingFacing()).color = colorDefault;
-            if (pawn.Drawer.renderer.HeadGraphic != null) pawn.Drawer.renderer.HeadGraphic.MatAt(pawn.Drawer.renderer.LayingFacing()).color = colorDefault;
         }
     }
 }
